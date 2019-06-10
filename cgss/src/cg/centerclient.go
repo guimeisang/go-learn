@@ -11,7 +11,7 @@ type CenterClient struct {
 	*ipc.IpcClient
 }
 
-func (client *CenterServer)AddPlayer(player *Player) error {
+func (client *CenterClient)AddPlayer(player *Player) error {
 	b, err := json.Marshal(*player)
 	if err != nil{
 		return err
@@ -24,4 +24,33 @@ func (client *CenterServer)AddPlayer(player *Player) error {
 	return err
 }
 
+func (client *CenterClient)RemovePlayer(name string) error {
+	ret, _ := client.Call("removeplayer", name)
+	if ret.Code == "200"{
+		return nil
+	}
+	return errors.New(ret.Code)
+}
 
+func (client *CenterClient)ListPlayer(params string) (ps []*Player, err error) {
+	resp, _ := client.call("listplayer", params)
+	if resp.Code != "200" {
+		err = errors.New(resp.Code)
+		return
+	}
+	err = json.Unmarshal([]byte(resp.Body), &ps)
+	return
+}
+
+func (client *CenterClient) Broadcast(message string) error{
+	m := &Message{Content:message}
+	b, err := json.Marshal(m)
+	if err != nil{
+		return nil
+	}
+	resp, _:= client.Call("broadcast", string(b))
+	if resp.Code == "200"{
+		return nil
+	}
+	return errors.New(resp.Code)
+}
