@@ -1,0 +1,5 @@
+还没有掌握的部分：
+
+- non-blocking-channel-operations
+
+> 主要想不通为什么都是走到default这个选择条件中
